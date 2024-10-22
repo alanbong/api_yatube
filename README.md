@@ -14,46 +14,54 @@ API FINAL
 
 ## Установка
 
-1. Клонируйте репозиторий:
-    ```bash
-    git clone <URL>
+1. Клонируйте репозиторий и перейти в него в командной строке:
     ```
-2. Установите виртуальное окружение:
+    git clone https://github.com/alanbong/api_final_yatube.git
+    ```
+    ```
+    cd API_FINAL_YATUBE
+    ```
+2. Установите и активируйте виртуальное окружение:
     ### Windows
-    ```bash
+    ```
     python -m venv venv
     . venv/Scripts/activate
     ```
     ### Linux/MacOS
-    ```bash
+    ```
     python3 -m venv venv
     source venv/bin/activate
     ```
-3. Установите зависимости:
-    ```bash
+3. Установите зависимости из файла requirements.txt:
+    ### Windows
+    ```
     pip install -r requirements.txt
     ```
+    ### Linux/MacOS
+    ```
+    python3 -m pip install --upgrade pip
+    ```
 4. Примените миграции:
-    ```bash
+    ```
     python yatube_api/manage.py migrate
     ```
 5. Запустите проект:
-    ```bash
+    ```
     python yatube_api/manage.py runserver
     ```
-6. OPTIONAL. После запуска сервера полная версия документации доступна будет доступна [здесь](http://127.0.0.1:8000/redoc/)
+6. Опционально. После запуска сервера полная версия документации доступна будет доступна [здесь](http://127.0.0.1:8000/redoc/)
 
 ## Примеры запросов
 
 ### Получение списка постов:
 
-```http
+```
 GET /api/v1/posts/
 ```
 
 ### Создание нового поста:
 
-```http
+```
 POST /api/v1/posts/
 ```
 
