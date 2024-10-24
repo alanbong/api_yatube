@@ -17,8 +17,6 @@ class PostSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Post."""
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True)
-    group = serializers.PrimaryKeyRelatedField(
-        queryset=Group.objects.all(), required=False)
 
     class Meta:
         fields = ('id', 'author', 'text',
@@ -31,18 +29,17 @@ class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
-    post = serializers.PrimaryKeyRelatedField(
-        read_only=True
-    )
 
     class Meta:
         fields = ('id', 'author', 'text', 'created', 'post')
+        read_only_fields = ('post',)
         model = Comment
 
 
 class FollowSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Follow."""
     user = serializers.SlugRelatedField(
+        default=serializers.CurrentUserDefault(),
         read_only=True, slug_field='username'
     )
     following = serializers.SlugRelatedField(
@@ -52,23 +49,18 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('user', 'following')
         model = Follow
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=Follow.objects.all(),
+                fields=['user', 'following'],
+                message="Вы уже подписаны на этого пользователя."
+            )
+        ]   
 
     def validate_following(self, value):
-        """
-        Валидация для проверки, что:
-            - Пользователь не подписывается сам на себя.
-            - Пользователь подписывается на существующего пользоватля.
-            - Пользователь еще не подписывался на данного пользователя.
-        """
+        """Проверка, что пользователь не подписывается сам на себя."""
         user = self.context['request'].user
         if user == value:
             raise serializers.ValidationError(
                 'Нельзя подписаться на самого себя')
-        if not User.objects.filter(username=value).exists():
-            raise serializers.ValidationError(
-                'Пользователь с таким именем не существует')
-        if Follow.objects.filter(user=user, following=value).exists():
-            raise serializers.ValidationError(
-                'Вы уже подписаны на этого пользователя')
-
         return value
