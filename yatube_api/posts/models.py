@@ -52,12 +52,17 @@ class Follow(models.Model):
         User, on_delete=models.CASCADE, related_name='following')
 
     class Meta:
-        constraints = (
+        constraints = [
             models.UniqueConstraint(
                 fields=('user', 'following'),
-                name='Unique follow',
+                name='unique_follow',
             ),
-        )
+
+            models.CheckConstraint(
+                check=models.Q(_negated=True, user=models.F('following')),
+                name='user_cant_follow_himself',
+            ),
+        ]
 
     def __str__(self):
         return f'{self.user} подписан на {self.following}'
