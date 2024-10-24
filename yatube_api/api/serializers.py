@@ -56,7 +56,7 @@ class FollowSerializer(serializers.ModelSerializer):
                 fields=['user', 'following'],
                 message="Вы уже подписаны на этого пользователя."
             )
-        ]   
+        ]
 
     def validate_following(self, value):
         """Проверка, что пользователь не подписывается сам на себя."""
