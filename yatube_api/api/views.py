@@ -1,11 +1,9 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, permissions, viewsets
+from rest_framework import filters, mixins, permissions, viewsets
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-
 from posts.models import Follow, Group, Post
-
 from .permissions import IsOwnerOrReadOnly
 from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
                           PostSerializer)
@@ -41,7 +39,9 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
 
-class FollowViewSet(viewsets.ModelViewSet):
+class FollowViewSet(mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
+                    viewsets.GenericViewSet):
     """ViewSet для управления подписками.
 
     Поддерживает:
@@ -54,7 +54,7 @@ class FollowViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Возвращает подписки текущего пользователя."""
-        return Follow.objects.filter(user=self.request.user)
+        return self.request.user.follower.all()
 
     def perform_create(self, serializer):
         """Создаёт подписку."""
@@ -75,14 +75,14 @@ class CommentViewSet(viewsets.ModelViewSet):
         IsOwnerOrReadOnly
     ]
 
+    def get_post(self):
+        """Возвращает объект поста по его id."""
+        return get_object_or_404(Post, id=self.kwargs['post_id'])
+
     def get_queryset(self):
         """Возвращает комментарии поста."""
-        post_id = self.kwargs['post_id']
-        post = get_object_or_404(Post, id=post_id)
-        return post.comments.all()
+        return self.get_post().comments.all()
 
     def perform_create(self, serializer):
         """Устанавливает автором комментария текущего пользователя."""
-        post_id = self.kwargs['post_id']
-        post = get_object_or_404(Post, id=post_id)
-        serializer.save(author=self.request.user, post=post)
+        serializer.save(author=self.request.user, post=self.get_post())
