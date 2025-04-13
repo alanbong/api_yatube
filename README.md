@@ -17,7 +17,7 @@
     git clone https://github.com/alanbong/api_yatube.git
     ```
     ```
-    cd API_FINAL_YATUBE
+    cd API_YATUBE
     ```
 2. Установите и активируйте виртуальное окружение:
     ### Windows
