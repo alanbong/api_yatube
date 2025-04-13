@@ -16,7 +16,7 @@ API FINAL
 
 1. Клонируйте репозиторий и перейти в него в командной строке:
     ```
-    git clone https://github.com/alanbong/api_final_yatube.git
+    git clone https://github.com/alanbong/api_yatube.git
     ```
     ```
     cd API_FINAL_YATUBE
