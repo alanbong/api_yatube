@@ -1,6 +1,4 @@
-# api_final
-
-API FINAL
+# api_yatube
 
 ## Описание
 
